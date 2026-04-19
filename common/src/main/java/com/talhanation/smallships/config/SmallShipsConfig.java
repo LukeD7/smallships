@@ -21,7 +21,7 @@ public class SmallShipsConfig {
     public static final ForgeConfigSpec CLIENT_SPEC;
 
     public static int CLIENT_SCHEMATIC_VERSION = 2;
-    public static int COMMON_SCHEMATIC_VERSION = 7;
+    public static int COMMON_SCHEMATIC_VERSION = 6;
 
     static {
         ForgeConfigSpec.Builder commonConfigBuilder = new ForgeConfigSpec.Builder();
@@ -443,7 +443,10 @@ public class SmallShipsConfig {
             resetEntry(config, Common.shipAttributeCogRotationAcceleration);
         });
         // To make a config update add a new element like the above to the schematic Updater field (don't ever change the order!) and don't forget to increment the default schematicVersion the setup method
-        commonSchematicUpdater.add(config -> {
+        commonSchematicUpdater.add(config -> {}); // sv 2→3 (no-op)
+        commonSchematicUpdater.add(config -> {}); // sv 3→4 (no-op)
+        commonSchematicUpdater.add(config -> {}); // sv 4→5 (no-op)
+        commonSchematicUpdater.add(config -> {    // sv 5→6: increase default ship speeds
             resetEntry(config, Common.shipAttributeCogMaxSpeed);
             resetEntry(config, Common.shipAttributeBriggMaxSpeed);
             resetEntry(config, Common.shipAttributeGalleyMaxSpeed);
