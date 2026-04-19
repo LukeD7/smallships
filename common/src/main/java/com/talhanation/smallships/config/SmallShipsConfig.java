@@ -21,7 +21,7 @@ public class SmallShipsConfig {
     public static final ForgeConfigSpec CLIENT_SPEC;
 
     public static int CLIENT_SCHEMATIC_VERSION = 2;
-    public static int COMMON_SCHEMATIC_VERSION = 5;
+    public static int COMMON_SCHEMATIC_VERSION = 7;
 
     static {
         ForgeConfigSpec.Builder commonConfigBuilder = new ForgeConfigSpec.Builder();
@@ -205,7 +205,7 @@ public class SmallShipsConfig {
         Common.shipAttributeCogMaxHealth = builder
                 .defineInRange("shipAttributeCogMaxHealth", 300.0D, 1.0D, 10000.0D);
         Common.shipAttributeCogMaxSpeed = builder
-                .defineInRange("shipAttributeCogMaxSpeed", 30.0D, 0.0D, 100.0D);
+                .defineInRange("shipAttributeCogMaxSpeed", 50.0D, 0.0D, 100.0D);
         Common.shipAttributeCogMaxReverseSpeed = builder
                 .defineInRange("shipAttributeCogMaxReverseSpeed", 0.1D, 0.0D, 100.0D);
         Common.shipAttributeCogMaxRotationSpeed = builder
@@ -246,7 +246,7 @@ public class SmallShipsConfig {
         Common.shipAttributeBriggMaxHealth = builder
                 .defineInRange("shipAttributeBriggMaxHealth", 450.0D, 0.0D, 10000.0D);
         Common.shipAttributeBriggMaxSpeed = builder
-                .defineInRange("shipAttributeBriggMaxSpeed", 35.0D, 0.0D, 100.0D);
+                .defineInRange("shipAttributeBriggMaxSpeed", 55.0D, 0.0D, 100.0D);
         Common.shipAttributeBriggMaxReverseSpeed = builder
                 .defineInRange("shipAttributeBriggMaxReverseSpeed", 0.1D, 0.0D, 100.0D);
         Common.shipAttributeBriggMaxRotationSpeed = builder
@@ -287,7 +287,7 @@ public class SmallShipsConfig {
         Common.shipAttributeGalleyMaxHealth = builder
                 .defineInRange("shipAttributeGalleyMaxHealth", 200.0D, 0.0D, 10000.0D);
         Common.shipAttributeGalleyMaxSpeed = builder
-                .defineInRange("shipAttributeGalleyMaxSpeed", 30.0D, 0.0D, 100.0D);
+                .defineInRange("shipAttributeGalleyMaxSpeed", 48.0D, 0.0D, 100.0D);
         Common.shipAttributeGalleyMaxReverseSpeed = builder
                 .defineInRange("shipAttributeGalleyMaxReverseSpeed", 0.1D, 0.0D, 100.0D);
         Common.shipAttributeGalleyMaxRotationSpeed = builder
@@ -327,7 +327,7 @@ public class SmallShipsConfig {
         Common.shipAttributeDrakkarMaxHealth = builder
                 .defineInRange("shipAttributeDrakkarMaxHealth", 200.0D, 0.0D, 10000.0D);
         Common.shipAttributeDrakkarMaxSpeed = builder
-                .defineInRange("shipAttributeDrakkarMaxSpeed", 30.0D, 0.0D, 100.0D);
+                .defineInRange("shipAttributeDrakkarMaxSpeed", 48.0D, 0.0D, 100.0D);
         Common.shipAttributeDrakkarMaxReverseSpeed = builder
                 .defineInRange("shipAttributeDrakkarMaxReverseSpeed", 0.1D, 0.0D, 100.0D);
         Common.shipAttributeDrakkarMaxRotationSpeed = builder
@@ -443,6 +443,12 @@ public class SmallShipsConfig {
             resetEntry(config, Common.shipAttributeCogRotationAcceleration);
         });
         // To make a config update add a new element like the above to the schematic Updater field (don't ever change the order!) and don't forget to increment the default schematicVersion the setup method
+        commonSchematicUpdater.add(config -> {
+            resetEntry(config, Common.shipAttributeCogMaxSpeed);
+            resetEntry(config, Common.shipAttributeBriggMaxSpeed);
+            resetEntry(config, Common.shipAttributeGalleyMaxSpeed);
+            resetEntry(config, Common.shipAttributeDrakkarMaxSpeed);
+        });
     }
     private static final List<Consumer<ModConfigWrapper>> clientSchematicUpdater = new ArrayList<>();
     private static boolean updateConfig(ModConfigWrapper config, List<Consumer<ModConfigWrapper>> schematicUpdater) {
