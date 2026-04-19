@@ -77,3 +77,11 @@ remapJar {
     injectAccessWidener = true
     inputFile.set shadowJar.archiveFile
 }
+
+tasks.register('copyToMods', Copy) {
+    dependsOn remapJar
+    from remapJar.archiveFile
+    into 'E:/CurseForge/Instances/KindaVanilla (ship test)/mods'
+}
+
+build.finalizedBy copyToMods

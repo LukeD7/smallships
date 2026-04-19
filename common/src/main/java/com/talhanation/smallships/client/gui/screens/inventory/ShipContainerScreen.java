@@ -10,7 +10,7 @@ import com.talhanation.smallships.world.inventory.ShipContainerMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class ShipContainerScreen extends AbstractContainerScreen<ShipContainerMenu> {
     private static final ResourceLocation RESOURCE_LOCATION = ResourceLocation.fromNamespaceAndPath(SmallShipsMod.MOD_ID,"textures/gui/ship_inventory.png" );
-    public static final int FONT_COLOR = 4210752;
+    public static final int FONT_COLOR = 0xFF404040;
     private final int rowCount;
     private final int pageCount;
     private final int pageIndex;
@@ -50,8 +50,8 @@ public class ShipContainerScreen extends AbstractContainerScreen<ShipContainerMe
     protected void renderBg(GuiGraphics guiGraphics, float f, int i, int j) {
         int k = offset + (this.width - this.imageWidth) / 2;
         int l = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(RenderType::guiTextured, RESOURCE_LOCATION, k, l, 0F, 0F, this.imageWidth, this.rowCount * 18 + 17, 256, 256);
-        guiGraphics.blit(RenderType::guiTextured, RESOURCE_LOCATION, k, l + this.rowCount * 18 + 17, 0F, 126F, this.imageWidth, 96, 256, 256);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, RESOURCE_LOCATION, k, l, 0F, 0F, this.imageWidth, this.rowCount * 18 + 17, 256, 256);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, RESOURCE_LOCATION, k, l + this.rowCount * 18 + 17, 0F, 126F, this.imageWidth, 96, 256, 256);
     }
 
     @Override
@@ -135,8 +135,8 @@ public class ShipContainerScreen extends AbstractContainerScreen<ShipContainerMe
         int leftPos2 = 323;
         int topPos = 38;
         int gap = 14;
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(0.7F, 0.7F, 1F);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().scale(0.7F, 0.7F);
         String attachment = this.containerShip instanceof Shieldable ? "Shields:" : "Cannons:";
 
         guiGraphics.drawString(font, "Name:", leftPos, topPos + gap * 0, FONT_COLOR, false);
@@ -153,11 +153,15 @@ public class ShipContainerScreen extends AbstractContainerScreen<ShipContainerMe
         guiGraphics.drawString(font, dmg + "%", leftPos2, topPos + gap * 4, FONT_COLOR, false);
         guiGraphics.drawString(font, currentAttachment + "/" + maxAttachment, leftPos2, topPos + gap * 5, FONT_COLOR, false);
 
-        // render page number
-        int xOffset = origLeftPos + (int) (133 - (float) (Mth.floor(Math.log10(this.pageCount))) * 6);
-        int yOffset = origTopPos + this.rowCount * 18;
-        if (this.pageCount > 1) guiGraphics.drawString(font, (this.pageIndex + 1) + "/"  + this.pageCount, xOffset, yOffset, FONT_COLOR, false);
+        guiGraphics.pose().popMatrix();
 
-        guiGraphics.pose().popPose();
+        // render page number centered between the arrow buttons
+        if (this.pageCount > 1) {
+            String pageText = (this.pageIndex + 1) + "/" + this.pageCount;
+            int textWidth = font.width(pageText);
+            int centerX = 127 + (30 - textWidth) / 2;
+            int centerY = 127;
+            guiGraphics.drawString(font, pageText, centerX, centerY, FONT_COLOR, false);
+        }
     }
 }

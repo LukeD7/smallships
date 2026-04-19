@@ -10,6 +10,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShearsItem;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public interface Bannerable extends Ability {
     BannerPosition getBannerPosition();//ZP for different angles usefully for wind feature
@@ -21,12 +23,13 @@ public interface Bannerable extends Ability {
         }
     }
 
-    default void readBannerShipSaveData(CompoundTag tag) {
-        if (tag.get("Banner") instanceof CompoundTag bannerCompound) self().setData(Ship.BANNER, ItemStack.parse(self().registryAccess(), bannerCompound).orElse(ItemStack.EMPTY));
+    default void readBannerShipSaveData(ValueInput input) {
+        input.read("Banner", ItemStack.CODEC).ifPresent(stack -> self().setData(Ship.BANNER, stack));
     }
 
-    default void addBannerShipSaveData(CompoundTag tag) {
-        if (!self().getData(Ship.BANNER).isEmpty()) tag.put("Banner", self().getData(Ship.BANNER).save(self().registryAccess()));
+    default void addBannerShipSaveData(ValueOutput output) {
+        ItemStack banner = self().getData(Ship.BANNER);
+        if (!banner.isEmpty()) output.store("Banner", ItemStack.CODEC, banner);
     }
 
     default boolean interactBanner(Player player, InteractionHand interactionHand) {

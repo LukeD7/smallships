@@ -2,12 +2,12 @@ package com.talhanation.smallships.world.inventory;
 
 import com.talhanation.smallships.world.entity.ship.ContainerShip;
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class ContainerUtility {
     @ExpectPlatform
@@ -15,30 +15,11 @@ public class ContainerUtility {
         throw new AssertionError();
     }
 
-    public static void loadAllItems(CompoundTag tag, NonNullList<ItemStack> itemStacks, HolderLookup.Provider levelRegistry) {
-        ListTag listTag = tag.getList("Items").orElseThrow();
-
-        for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i).orElseThrow();
-            short slot = compoundTag.getShort("Slot").orElseThrow();
-            if (slot < itemStacks.size()) {
-                itemStacks.set(slot, ItemStack.parse(levelRegistry, compoundTag).orElse(ItemStack.EMPTY));
-            }
-        }
+    public static void loadAllItems(ValueInput input, NonNullList<ItemStack> itemStacks) {
+        ContainerHelper.loadAllItems(input, itemStacks);
     }
 
-    public static void saveAllItems(CompoundTag tag, NonNullList<ItemStack> itemStacks, HolderLookup.Provider levelRegistry) {
-        ListTag listTag = new ListTag();
-
-        for (int i = 0; i < itemStacks.size(); ++i) {
-            ItemStack itemStack = itemStacks.get(i);
-            if (!itemStack.isEmpty()) {
-                CompoundTag compoundTag = new CompoundTag();
-                compoundTag.putShort("Slot", (short) i);
-                listTag.add(itemStack.save(levelRegistry, compoundTag));
-            }
-        }
-
-        tag.put("Items", listTag);
+    public static void saveAllItems(ValueOutput output, NonNullList<ItemStack> itemStacks) {
+        ContainerHelper.saveAllItems(output, itemStacks);
     }
 }

@@ -1,6 +1,8 @@
 package com.talhanation.smallships.world.entity.ship;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class Attributes {
     public float maxHealth;
@@ -23,6 +25,17 @@ public class Attributes {
         tag.put("Attributes", compoundtag);
     }
 
+    public void addSaveData(ValueOutput output) {
+        ValueOutput child = output.child("Attributes");
+        child.putFloat("maxHealth", this.maxHealth);
+        child.putFloat("maxSpeed", this.maxSpeed);
+        child.putFloat("maxReverseSpeed", this.maxReverseSpeed);
+        child.putFloat("acceleration", this.acceleration);
+        child.putFloat("rotationAcceleration", this.rotationAcceleration);
+        child.putFloat("maxRotationSpeed", this.maxRotationSpeed);
+        child.putFloat("friction", this.friction);
+    }
+
     public CompoundTag getSaveData() {
         CompoundTag compoundtag = new CompoundTag();
         this.addSaveData(compoundtag);
@@ -42,9 +55,29 @@ public class Attributes {
         }
     }
 
-    public void loadSaveData(CompoundTag tag, Ship shipEntity) { // Workaround because defineSynchedData doesn't work properly (or as I would like it to work: Use the provided 2nd argument as a "default" variable)
+    public void loadSaveData(ValueInput input) {
+        input.child("Attributes").ifPresent(child -> {
+            this.maxHealth = child.getFloatOr("maxHealth", 0);
+            this.maxSpeed = child.getFloatOr("maxSpeed", 0);
+            this.maxReverseSpeed = child.getFloatOr("maxReverseSpeed", 0);
+            this.acceleration = child.getFloatOr("acceleration", 0);
+            this.rotationAcceleration = child.getFloatOr("rotationAcceleration", 0);
+            this.maxRotationSpeed = child.getFloatOr("maxRotationSpeed", 0);
+            this.friction = child.getFloatOr("friction", 0);
+        });
+    }
+
+    public void loadSaveData(CompoundTag tag, Ship shipEntity) {
         if (tag.contains("Attributes")) {
             this.loadSaveData(tag);
+        } else {
+            this.loadSaveData(shipEntity.createDefaultAttributes());
+        }
+    }
+
+    public void loadSaveData(ValueInput input, Ship shipEntity) {
+        if (input.child("Attributes").isPresent()) {
+            this.loadSaveData(input);
         } else {
             this.loadSaveData(shipEntity.createDefaultAttributes());
         }

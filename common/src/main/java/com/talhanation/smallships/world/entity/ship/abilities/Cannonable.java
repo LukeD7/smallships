@@ -16,6 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -48,16 +50,16 @@ public interface Cannonable extends Ability {
     }
 
     @SuppressWarnings("unused")
-    default void readCannonShipSaveData(CompoundTag tag) {
-        if (tag.contains("CannonCount")) {
-            this.setCannonCount(tag.getByte("CannonCount").orElseThrow());
+    default void readCannonShipSaveData(ValueInput input) {
+        input.getInt("CannonCount").ifPresent(count -> {
+            this.setCannonCount(count.byteValue());
             this.updateCannonCount();
-        }
+        });
     }
 
     @SuppressWarnings("unused")
-    default void addCannonShipSaveData(CompoundTag tag) {
-        tag.putInt("CannonCount", this.getCannonCount());
+    default void addCannonShipSaveData(ValueOutput output) {
+        output.putInt("CannonCount", this.getCannonCount());
     }
 
     default float getCannonModifier() {

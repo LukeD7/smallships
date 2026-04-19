@@ -14,6 +14,9 @@ import com.talhanation.smallships.world.particles.cannon.DyedCannonShootOptions;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -93,22 +96,22 @@ public class GroundCannonEntity extends Minecart implements ICannon {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
         DyeColor dye;
-        if ((dye = this.getDye()) != null) tag.putString("Dye", dye.getSerializedName());
-        this.getEntityInBarrelUUID().ifPresent(uuid -> tag.putString("EntityInBarrelUUID", uuid.toString()));
+        if ((dye = this.getDye()) != null) output.putString("Dye", dye.getSerializedName());
+        this.getEntityInBarrelUUID().ifPresent(uuid -> output.putString("EntityInBarrelUUID", uuid.toString()));
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        if (tag.contains("Dye")) {
-            this.setDye(DyeColor.byName(tag.getString("Dye").orElseThrow(), null));
-        }
-        if (tag.contains("EntityInBarrelUUID")) {
-            this.setEntityInBarrelUUID(java.util.UUID.fromString(tag.getString("EntityInBarrelUUID").orElseThrow()));
-        }
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        input.getString("Dye").ifPresent(dye -> {
+            this.setDye(DyeColor.byName(dye, null));
+        });
+        input.getString("EntityInBarrelUUID").ifPresent(uuid -> {
+            this.setEntityInBarrelUUID(java.util.UUID.fromString(uuid));
+        });
     }
 
     public Cannon getCannon() {
@@ -321,9 +324,9 @@ public class GroundCannonEntity extends Minecart implements ICannon {
         if (level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             ItemStack itemStack = new ItemStack(arg);
             itemStack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
-            CompoundTag tag = new CompoundTag();
-            this.addAdditionalSaveData(tag);
-            itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+            TagValueOutput tagOutput = TagValueOutput.createWithContext(new net.minecraft.util.ProblemReporter.Collector(), this.registryAccess());
+            this.addAdditionalSaveData(tagOutput);
+            itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tagOutput.buildResult()));
             this.spawnAtLocation(level, itemStack);
         }
 
